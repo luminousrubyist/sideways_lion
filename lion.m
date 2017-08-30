@@ -52,6 +52,8 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     % handles    structure with handles and user data (see GUIDATA)
     % varargin   command line arguments to lion (see VARARGIN)
 
+    addpath('freezeColors_v23_cbfreeze/freezeColors');
+
     % Choose default command line output for lion
     handles.output = hObject;
 
