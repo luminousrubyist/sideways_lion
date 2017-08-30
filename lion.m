@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 29-Aug-2017 16:05:54
+    % Last Modified by GUIDE v2.5 30-Aug-2017 14:23:20
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -71,4 +71,104 @@ function varargout = lion_OutputFcn(hObject, eventdata, handles)
 
     % Get default command line output from handles structure
     varargout{1} = handles.output;
+end
+
+
+
+function edit_minlat_Callback(hObject, eventdata, handles)
+    % hObject    handle to edit_minlat (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Hints: get(hObject,'String') returns contents of edit_minlat as text
+    %        str2double(get(hObject,'String')) returns contents of edit_minlat as a double
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit_minlat_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to edit_minlat (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+end
+
+
+function edit_maxlat_Callback(hObject, eventdata, handles)
+    % hObject    handle to edit_maxlat (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Hints: get(hObject,'String') returns contents of edit_maxlat as text
+    %        str2double(get(hObject,'String')) returns contents of edit_maxlat as a double
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit_maxlat_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to edit_maxlat (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+end
+
+
+function edit_minlon_Callback(hObject, eventdata, handles)
+    % hObject    handle to edit_minlon (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Hints: get(hObject,'String') returns contents of edit_minlon as text
+    %        str2double(get(hObject,'String')) returns contents of edit_minlon as a double
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit_minlon_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to edit_minlon (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+end
+
+
+function edit_maxlon_Callback(hObject, eventdata, handles)
+    % hObject    handle to edit_maxlon (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Hints: get(hObject,'String') returns contents of edit_maxlon as text
+    %        str2double(get(hObject,'String')) returns contents of edit_maxlon as a double
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit_maxlon_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to edit_maxlon (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+end
+
+% --- Executes on button press in pushbutton_scope_ok.
+function pushbutton_scope_ok_Callback(hObject, eventdata, handles)
+    % hObject    handle to pushbutton_scope_ok (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
 end
