@@ -136,6 +136,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     axes(handles.axes_main);
 
     handles = draw_map([-40 -20],[60 80],handles);
+    handles = plot_picks(handles);
 
     % Output directory
     if ~ (7==exist('output','dir'))
@@ -179,6 +180,8 @@ function h = draw_map(latlim,lonlim,handles)
     end
 
     worldmap(latlim,lonlim);
+    ap.latlim = latlim;
+    ap.lonlim = lonlim;
 
     % Load etopo
     [z,~] = etopo(handles.files.ETOPO,1,latlim,lonlim);
@@ -197,6 +200,39 @@ function h = draw_map(latlim,lonlim,handles)
     handles.plots.(tag) = ap;
 
     h = handles;
+end
+
+function h = plot_picks(handles)
+  ax = gca;
+  tag = ax.Tag;
+  latlim = handles.plots.(tag).latlim;
+  lonlim = handles.plots.(tag).lonlim;
+
+  indices = find(handles.plat < latlim(2) & handles.plat > latlim(1) & handles.plon < lonlim(2) & handles.plon > lonlim(1));
+
+  % axes plots
+  ap = handles.plots.(tag);
+  if isfield(ap,'picks')
+      delete(ap.picks);
+      ap = rmfield(ap,'picks');
+  end
+  if isfield(ap,'picks_whte')
+      delete(ap.picks_whte);
+      ap = rmfield(ap,'picks_whte');
+  end
+
+  ap.picks_whte = scatterm(handles.plat(indices),handles.plon(indices),40,'wd');
+  hold on;
+  ap.picks = scatterm(handles.plat(indices),handles.plon(indices),100,handles.page_ck(indices),'diamond','MarkerFaceColor','flat','MarkerEdgeColor','flat');
+  hold on;
+  colormap(ax,'jet');
+  colorbar;
+  caxis(handles.AGELIM);
+  hold on;
+
+  handles.plots.(tag) = ap;
+
+  h = handles;
 end
 
 function edit_minlat_Callback(hObject, eventdata, handles)
