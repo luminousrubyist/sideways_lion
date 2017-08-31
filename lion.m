@@ -136,6 +136,10 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     axes(handles.axes_main);
 
     handles = draw_map([-40 -20],[60 80],handles);
+    set(handles.edit_minlat,'String',handles.plots.axes_main.latlim(1));
+    set(handles.edit_maxlat,'String',handles.plots.axes_main.latlim(2));
+    set(handles.edit_minlon,'String',handles.plots.axes_main.lonlim(1));
+    set(handles.edit_maxlon,'String',handles.plots.axes_main.lonlim(2));
     handles = plot_picks(handles);
 
     % Output directory
@@ -331,4 +335,14 @@ function pushbutton_scope_ok_Callback(hObject, eventdata, handles)
     % hObject    handle to pushbutton_scope_ok (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
+    minlat = str2double(get(handles.edit_minlat,'String'));
+    maxlat = str2double(get(handles.edit_maxlat,'String'));
+    minlon = str2double(get(handles.edit_minlon,'String'));
+    maxlon = str2double(get(handles.edit_maxlon,'String'));
+
+    % Draw map, plot picks
+    handles = draw_map([minlat maxlat],[minlon maxlon],handles);
+    handles = plot_picks(handles);
+
+    guidata(hObject,handles);
 end
