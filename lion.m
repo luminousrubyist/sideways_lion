@@ -53,6 +53,95 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     % varargin   command line arguments to lion (see VARARGIN)
 
     addpath('freezeColors_v23_cbfreeze/freezeColors');
+    warning('off','MATLAB:nargchk:deprecated');
+
+    handles.files = struct();
+    handles.files.ETOPO = 'data/etopo1_bed_c_f4.flt';
+    handles.files.FLOWLINES = 'data/flowlines';
+    handles.files.PICKS = 'data/GSFML.global.picks.gmt_output_latlonage';
+    handles.files.SEGMENTS = 'data/segments_allspreadingrates_Feb172012';
+
+    % ETOPO scaling
+    handles.ETOPOLIM = [-5000 -2000];
+    % Axes limits
+    % pick ages in Mya
+    handles.AGELIM  = [0 30];
+
+    % Colors
+    handles.JET = colormap('jet');
+    handles.GRAYSCALE = colormap(flipud(colormap('gray')));
+
+    % Load SEGMENTS
+    handles.SEGMENTS = tdfread(handles.files.SEGMENTS, 'tab');
+    handles.segments = handles.SEGMENTS;
+    handles.segments.has_flowline = false(length(handles.segments.lat1),1);
+
+    % Load flowlines --> files must start with 'flowline' and end with
+    % an underscore followed by the flowline's segment id
+    handles.flow = containers.Map;
+    flowline_files = dir(fullfile(handles.files.FLOWLINES,'flowline*'));
+    [nfiles,~] = size(flowline_files);
+    for i = 1:nfiles
+      fname = flowline_files(i).name;
+      % Get a list of underscore-separated tokens in the filename, then reverse it
+      tokens = flip(strsplit(fname,'_'));
+      % The last token (first in the reversed list) is the segment id
+      seg_id = str2num(tokens{1});
+      handles.segments.has_flowline(seg_id) = true;
+
+      fullname = fullfile(handles.files.FLOWLINES,fname);
+
+      % Build xflow data
+      flow = struct();
+      flow.name = fname;
+      flow.seg_id = seg_id;
+      coords = load(fullname);
+
+      % Interpret center of the flowline to be the first line of the file
+      flow.center = coords(1,:);
+
+      % Identify each end of flowline
+      flow.first = coords(2,:);
+      flow.lat = coords(end,:);
+
+      flow.lat = coords(:,1);
+      flow.lon = coords(:,2);
+      handles.flow(fname) = flow;
+    end
+
+    % Load picks
+    picksformat = '%n %n %n';
+    [plat, plon, page_ck] = textread(handles.files.PICKS,picksformat);
+
+    handles.PLAT  = plat;
+    handles.PLON = plon;
+    handles.PAGE_CK = page_ck;
+
+    handles.plat = plat;
+    handles.plon = plon;
+    handles.page_ck = page_ck;
+    handles.pid = 1:length(plat);
+
+    % Init plots
+    handles.plots = struct();
+    % Create an entry in the plots object for each axes
+    all_axes = findobj(gcf,'type','axes');
+    for i=1:length(all_axes);
+      ax = all_axes(i);
+      tag = ax.Tag;
+      handles.plots.(tag) = struct();
+    end
+
+    % Draw map and ETOPO
+    axes(handles.axes_main);
+
+    handles = draw_map([-40 -20],[60 80],handles);
+
+    % Output directory
+    if ~ (7==exist('output','dir'))
+      disp('Output directory not found, creating it');
+      mkdir('output');
+    end
 
     % Choose default command line output for lion
     handles.output = hObject;
@@ -75,7 +164,40 @@ function varargout = lion_OutputFcn(hObject, eventdata, handles)
     varargout{1} = handles.output;
 end
 
+% Draw a map on the current axes with parameters latlim and lonlim
+function h = draw_map(latlim,lonlim,handles)
+    ax = gca;
+    tag = ax.Tag;
+    cla(ax);
 
+    % axes plots
+    ap = handles.plots.(tag);
+
+    if isfield(ap,'etopo')
+      delete(ap.etopo);
+      ap = rmfield(ap,'etopo');
+    end
+
+    worldmap(latlim,lonlim);
+
+    % Load etopo
+    [z,~] = etopo(handles.files.ETOPO,1,latlim,lonlim);
+
+    ap.etopo = surfm(latlim,lonlim,z,z);
+
+    % ETOPO axis
+    colormap(ax,handles.GRAYSCALE);
+    colorbar;
+    caxis(handles.ETOPOLIM);
+    hold on;
+
+    freezeColors();
+
+    % Store ap on the handles object
+    handles.plots.(tag) = ap;
+
+    h = handles;
+end
 
 function edit_minlat_Callback(hObject, eventdata, handles)
     % hObject    handle to edit_minlat (see GCBO)
