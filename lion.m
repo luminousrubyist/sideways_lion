@@ -407,6 +407,10 @@ function pushbutton_choose_file_Callback(hObject, eventdata, handles)
     % hObject    handle to pushbutton_choose_file (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
+    [name,folder] = uigetfile('*.segment');
+    filename = fullfile(folder,name);
+    set(handles.edit_segment_file,'String',filename);
+    guidata(hObject,handles);
 end
 
 
