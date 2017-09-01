@@ -142,6 +142,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.edit_maxlon,'String',handles.plots.axes_main.lonlim(2));
     handles = plot_picks(handles);
     handles = plot_segments(handles);
+    handles = plot_flowline('flowline_FZ_SEIR_9_694',handles);
 
     % Output directory
     if ~ (7==exist('output','dir'))
@@ -271,6 +272,26 @@ function h = plot_segments(handles)
     handles.plots.(tag) = ap;
 
     h= handles;
+end
+
+function h = plot_flowline(fname,handles)
+    ax = gca;
+    tag = ax.Tag;
+
+    % axes plots
+    ap = handles.plots.(tag);
+    if(isfield(ap,fname))
+        delete(ap.(fname));
+        ap = rmfield(ap,fname);
+    end
+
+    flow = handles.flow(fname);
+    ap.(fname) = plotm(flow.lat,flow.lon,'o','color',[0,0.5,1]);
+    hold on;
+
+    handles.plots.(tag) = ap;
+
+    h = handles;
 end
 
 function edit_minlat_Callback(hObject, eventdata, handles)
