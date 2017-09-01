@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 30-Aug-2017 14:23:20
+    % Last Modified by GUIDE v2.5 01-Sep-2017 15:02:59
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -345,4 +345,41 @@ function pushbutton_scope_ok_Callback(hObject, eventdata, handles)
     handles = plot_picks(handles);
 
     guidata(hObject,handles);
+end
+
+% --- Executes on button press in pushbutton_choose_file.
+function pushbutton_choose_file_Callback(hObject, eventdata, handles)
+    % hObject    handle to pushbutton_choose_file (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+end
+
+
+function edit_segment_file_Callback(hObject, eventdata, handles)
+    % hObject    handle to edit_segment_file (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Hints: get(hObject,'String') returns contents of edit_segment_file as text
+    %        str2double(get(hObject,'String')) returns contents of edit_segment_file as a double
+end
+
+% --- Executes during object creation, after setting all properties.
+function edit_segment_file_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to edit_segment_file (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+end
+
+% --- Executes on button press in pushbutton_flowfile_ok.
+function pushbutton_flowfile_ok_Callback(hObject, eventdata, handles)
+    % hObject    handle to pushbutton_flowfile_ok (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
 end
