@@ -141,6 +141,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.edit_minlon,'String',handles.plots.axes_main.lonlim(1));
     set(handles.edit_maxlon,'String',handles.plots.axes_main.lonlim(2));
     handles = plot_picks(handles);
+    handles = plot_segments(handles);
 
     % Output directory
     if ~ (7==exist('output','dir'))
@@ -237,6 +238,39 @@ function h = plot_picks(handles)
   handles.plots.(tag) = ap;
 
   h = handles;
+end
+
+function h = plot_segments(handles)
+    ax = gca;
+    tag = ax.Tag;
+
+    % axes plots
+    ap = handles.plots.(tag);
+    if(isfield(ap,'segments'))
+      delete(ap.segments);
+      ap = rmfield(ap,'segments');
+    end
+    lat1 = handles.segments.lat1;
+    lon1 = handles.segments.lon1;
+    lat2 = handles.segments.lat2;
+    lon2 = handles.segments.lon2;
+
+
+    % Include in h only indices of segments whose start and ends points are
+    % both within the viewing window
+    indices = find(max([lat1 lat2],[],2)>=ap.latlim(1) & min([lat1 lat2],[],2)<=ap.latlim(2) & max([lon1 lon2],[],2)>=ap.lonlim(1) & min([lon1 lon2],[],2)<=ap.lonlim(2));
+    lat1=lat1(indices);
+    lat2=lat2(indices);
+    lon1=lon1(indices);
+    lon2=lon2(indices);
+    for i = 1:length(lat1)
+        ap.segments = plotm([lat1(i) lat2(i)],[lon1(i) lon2(i)],'r-','linewidth',4);
+        hold on;
+    end
+
+    handles.plots.(tag) = ap;
+
+    h= handles;
 end
 
 function edit_minlat_Callback(hObject, eventdata, handles)
