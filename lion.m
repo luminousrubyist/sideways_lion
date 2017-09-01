@@ -74,6 +74,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     % Load SEGMENTS
     handles.SEGMENTS = tdfread(handles.files.SEGMENTS, 'tab');
     handles.segments = handles.SEGMENTS;
+    handles.segments.picks = cell(length(handles.segments.lat1),1);
     handles.segments.has_flowline = false(length(handles.segments.lat1),1);
 
     % Load flowlines --> files must start with 'flowline' and end with
@@ -441,4 +442,18 @@ function pushbutton_flowfile_ok_Callback(hObject, eventdata, handles)
     % hObject    handle to pushbutton_flowfile_ok (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
+    filename = get(handles.edit_segment_file,'String');
+    fid = fopen(filename,'r');
+    % First header line
+    fgetl(fid);
+    % {seg_id boundary}
+    seg_info = textscan(fid,'%d %s');
+    seg_id = seg_info{1};
+    % Second header line
+    fgetl(fid);
+    % {pid plat plon page_ck ridge_side}
+    picks_info = textscan(fid,'%d %f %f %f %s');
+    pick_ids = picks_info{1,:};
+    handles.segments.picks{seg_id} = pick_ids;
+    fclose(fid);
 end
