@@ -213,10 +213,10 @@ function h = select_flowline(fname,handles)
     handles.selected_flowline = fname;
     flow = handles.flow(fname);
     seg_id = flow.seg_id;
-    nminlat = min(flow.lat) - 6;
-    nmaxlat = max(flow.lat) + 6;
-    nminlon = min(flow.lon) - 6;
-    nmaxlon = max(flow.lon) + 6;
+    nminlat = min(flow.lat) - 1;
+    nmaxlat = max(flow.lat) + 1;
+    nminlon = min(flow.lon) - 1;
+    nmaxlon = max(flow.lon) + 1;
 
     set(handles.edit_minlat,'String',nminlat);
     set(handles.edit_maxlat,'String',nmaxlat);
