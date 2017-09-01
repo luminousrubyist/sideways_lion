@@ -209,13 +209,42 @@ function h = draw_map(latlim,lonlim,handles)
     h = handles;
 end
 
-function h = plot_picks(handles)
+function h = select_flowline(fname,handles)
+    handles.selected_flowline = fname;
+    flow = handles.flow(fname);
+    seg_id = flow.seg_id;
+    nminlat = min(flow.lat) - 6;
+    nmaxlat = max(flow.lat) + 6;
+    nminlon = min(flow.lon) - 6;
+    nmaxlon = max(flow.lon) + 6;
+
+    set(handles.edit_minlat,'String',nminlat);
+    set(handles.edit_maxlat,'String',nmaxlat);
+    set(handles.edit_minlon,'String',nminlon);
+    set(handles.edit_maxlon,'String',nmaxlon);
+
+    latlim = [nminlat nmaxlat];
+    lonlim = [nminlon nmaxlon];
+
+    handles = draw_map(latlim,lonlim,handles);
+    handles = plot_segments(handles);
+    handles = plot_flowline(fname,handles);
+    handles = plot_picks(handles.segments.picks{seg_id},handles);
+
+    h = handles;
+end
+
+function h = plot_picks(picks,handles)
   ax = gca;
   tag = ax.Tag;
   latlim = handles.plots.(tag).latlim;
   lonlim = handles.plots.(tag).lonlim;
 
-  indices = find(handles.plat < latlim(2) & handles.plat > latlim(1) & handles.plon < lonlim(2) & handles.plon > lonlim(1));
+  plat = handles.plat(picks);
+  plon = handles.plon(picks)
+  page_ck = handles.page_ck(picks);
+
+  indices = find(plat < latlim(2) & plat > latlim(1) & plon < lonlim(2) & plon > lonlim(1));
 
   % axes plots
   ap = handles.plots.(tag);
@@ -228,9 +257,9 @@ function h = plot_picks(handles)
       ap = rmfield(ap,'picks_whte');
   end
 
-  ap.picks_whte = scatterm(handles.plat(indices),handles.plon(indices),40,'wd');
+  ap.picks_whte = scatterm(plat(indices),plon(indices),40,'wd');
   hold on;
-  ap.picks = scatterm(handles.plat(indices),handles.plon(indices),100,handles.page_ck(indices),'diamond','MarkerFaceColor','flat','MarkerEdgeColor','flat');
+  ap.picks = scatterm(plat(indices),plon(indices),100,page_ck(indices),'diamond','MarkerFaceColor','flat','MarkerEdgeColor','flat');
   hold on;
   colormap(ax,'jet');
   colorbar;
@@ -456,4 +485,7 @@ function pushbutton_flowfile_ok_Callback(hObject, eventdata, handles)
     pick_ids = picks_info{1,:};
     handles.segments.picks{seg_id} = pick_ids;
     fclose(fid);
+    fname = flowline_for(seg_id,handles);
+    handles = select_flowline(fname,handles);
+    guidata(hObject,handles);
 end
