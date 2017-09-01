@@ -141,9 +141,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.edit_maxlat,'String',handles.plots.axes_main.latlim(2));
     set(handles.edit_minlon,'String',handles.plots.axes_main.lonlim(1));
     set(handles.edit_maxlon,'String',handles.plots.axes_main.lonlim(2));
-    handles = plot_picks(handles);
     handles = plot_segments(handles);
-    handles = plot_flowline('flowline_FZ_SEIR_9_694',handles);
 
     % Output directory
     if ~ (7==exist('output','dir'))
@@ -229,20 +227,20 @@ function h = select_flowline(fname,handles)
     handles = draw_map(latlim,lonlim,handles);
     handles = plot_segments(handles);
     handles = plot_flowline(fname,handles);
-    handles = plot_picks(handles.segments.picks{seg_id},handles);
+    handles = plot_picks(seg_id,handles);
 
     h = handles;
 end
 
-function h = plot_picks(picks,handles)
+function h = plot_picks(seg_id,handles)
   ax = gca;
   tag = ax.Tag;
   latlim = handles.plots.(tag).latlim;
   lonlim = handles.plots.(tag).lonlim;
 
-  plat = handles.plat(picks);
-  plon = handles.plon(picks)
-  page_ck = handles.page_ck(picks);
+  plat = handles.segments.picks{seg_id}.plat;
+  plon = handles.segments.picks{seg_id}.plon;
+  page_ck = handles.segments.picks{seg_id}.page_ck;
 
   indices = find(plat < latlim(2) & plat > latlim(1) & plon < lonlim(2) & plon > lonlim(1));
 
@@ -482,8 +480,13 @@ function pushbutton_flowfile_ok_Callback(hObject, eventdata, handles)
     fgetl(fid);
     % {pid plat plon page_ck ridge_side}
     picks_info = textscan(fid,'%d %f %f %f %s');
-    pick_ids = picks_info{1,:};
-    handles.segments.picks{seg_id} = pick_ids;
+    picks = struct();
+    picks.pid = picks_info{:,1};
+    picks.plat = picks_info{:,2};
+    picks.plon = picks_info{:,3};
+    picks.page_ck = picks_info{:,4};
+    picks.ridge_side = picks_info{:,5};
+    handles.segments.picks{seg_id} = picks;
     fclose(fid);
     fname = flowline_for(seg_id,handles);
     handles = select_flowline(fname,handles);
