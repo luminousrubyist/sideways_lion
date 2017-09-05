@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 01-Sep-2017 15:02:59
+    % Last Modified by GUIDE v2.5 05-Sep-2017 10:16:05
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -127,7 +127,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     handles.plots = struct();
     % Create an entry in the plots object for each axes
     all_axes = findobj(gcf,'type','axes');
-    for i=1:length(all_axes);
+    for i=1:length(all_axes)
       ax = all_axes(i);
       tag = ax.Tag;
       handles.plots.(tag) = struct();
@@ -491,4 +491,23 @@ function pushbutton_flowfile_ok_Callback(hObject, eventdata, handles)
     fname = flowline_for(seg_id,handles);
     handles = select_flowline(fname,handles);
     guidata(hObject,handles);
+end
+
+
+function pushbutton_select_chron_Callback(hObject, eventdata, handles)
+end
+
+function edit_chron_Callback(hObject, eventdata, handles)
+end
+
+function edit_chron_CreateFcn(hObject, eventdata, handles)
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+end
+
+function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
 end
