@@ -495,6 +495,12 @@ end
 
 
 function pushbutton_select_chron_Callback(hObject, eventdata, handles)
+    fname = handles.selected_flowline;
+    xflow = handles.flow(fname);
+    seg_id = xflow.seg_id;
+    [mlat mlon] = inputm(1);
+    closest_pick(mlat,mlon,seg_id,handles)
+    guidata(hObject,handles);
 end
 
 function edit_chron_Callback(hObject, eventdata, handles)
