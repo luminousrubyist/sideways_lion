@@ -74,7 +74,6 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     % Load SEGMENTS
     handles.SEGMENTS = tdfread(handles.files.SEGMENTS, 'tab');
     handles.segments = handles.SEGMENTS;
-    handles.segments.picks = cell(length(handles.segments.lat1),1);
     handles.segments.has_flowline = false(length(handles.segments.lat1),1);
 
     % Load flowlines --> files must start with 'flowline' and end with
@@ -211,7 +210,7 @@ function h = select_flowline(fname,handles)
     handles.selected_flowline = fname;
     flow = handles.flow(fname);
     seg_id = flow.seg_id;
-    handles.picks = handles.segments.picks{seg_id};
+    handles.seg_id = seg_id;
     nminlat = min(flow.lat) - 1;
     nmaxlat = max(flow.lat) + 1;
     nminlon = min(flow.lon) - 1;
@@ -487,7 +486,7 @@ function pushbutton_flowfile_ok_Callback(hObject, eventdata, handles)
     picks.plon = picks_info{:,3};
     picks.page_ck = picks_info{:,4};
     picks.ridge_side = picks_info{:,5};
-    handles.segments.picks{seg_id} = picks;
+    handles.picks = picks;
     fclose(fid);
     fname = flowline_for(seg_id,handles);
     handles = select_flowline(fname,handles);
