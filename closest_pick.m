@@ -5,8 +5,8 @@
 % @
 % @param handles the application's handles object
 % @return int pid the id of the closest pick
-function pid = closest_pick(lat,lon,seg_id,handles)
-    picks = handles.segments.picks{seg_id};
+function pid = closest_pick(lat,lon,handles)
+    picks = handles.picks;
     plat_vector = picks.plat;
     plon_vector = picks.plon;
     distances_to_mouse = hypot(lat - plat_vector, lon - plon_vector);

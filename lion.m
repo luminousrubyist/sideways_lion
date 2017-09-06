@@ -211,6 +211,7 @@ function h = select_flowline(fname,handles)
     handles.selected_flowline = fname;
     flow = handles.flow(fname);
     seg_id = flow.seg_id;
+    handles.picks = handles.segments.picks{seg_id};
     nminlat = min(flow.lat) - 1;
     nmaxlat = max(flow.lat) + 1;
     nminlon = min(flow.lon) - 1;
@@ -227,20 +228,20 @@ function h = select_flowline(fname,handles)
     handles = draw_map(latlim,lonlim,handles);
     handles = plot_segments(handles);
     handles = plot_flowline(fname,handles);
-    handles = plot_picks(seg_id,handles);
+    handles = plot_picks(handles);
 
     h = handles;
 end
 
-function h = plot_picks(seg_id,handles)
+function h = plot_picks(handles)
   ax = gca;
   tag = ax.Tag;
   latlim = handles.plots.(tag).latlim;
   lonlim = handles.plots.(tag).lonlim;
 
-  plat = handles.segments.picks{seg_id}.plat;
-  plon = handles.segments.picks{seg_id}.plon;
-  page_ck = handles.segments.picks{seg_id}.page_ck;
+  plat = handles.picks.plat;
+  plon = handles.picks.plon;
+  page_ck = handles.picks.page_ck;
 
   indices = find(plat < latlim(2) & plat > latlim(1) & plon < lonlim(2) & plon > lonlim(1));
 
@@ -500,9 +501,9 @@ function pushbutton_select_chron_Callback(hObject, eventdata, handles)
     seg_id = xflow.seg_id;
     [mlat mlon] = inputm(1);
     % Get id of closest pick
-    pid = closest_pick(mlat,mlon,seg_id,handles);
+    pid = closest_pick(mlat,mlon,handles);
 
-    set(handles.edit_chron,'String',handles.segments.picks{seg_id}.page_ck(pid));
+    set(handles.edit_chron,'String',handles.picks.page_ck(pid));
 
     guidata(hObject,handles);
 end
@@ -520,4 +521,5 @@ function edit_chron_CreateFcn(hObject, eventdata, handles)
 end
 
 function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
+    chron = str2double(get(handles.edit_chron,'String'));
 end
