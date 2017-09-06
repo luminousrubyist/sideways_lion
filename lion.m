@@ -499,7 +499,11 @@ function pushbutton_select_chron_Callback(hObject, eventdata, handles)
     xflow = handles.flow(fname);
     seg_id = xflow.seg_id;
     [mlat mlon] = inputm(1);
-    closest_pick(mlat,mlon,seg_id,handles)
+    % Get id of closest pick
+    pid = closest_pick(mlat,mlon,seg_id,handles);
+
+    set(handles.edit_chron,'String',handles.segments.picks{seg_id}.page_ck(pid));
+
     guidata(hObject,handles);
 end
 
