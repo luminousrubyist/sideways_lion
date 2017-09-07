@@ -102,10 +102,15 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
 
       % Identify each end of flowline
       flow.first = coords(2,:);
-      flow.lat = coords(end,:);
+      flow.last = coords(end,:);
 
       flow.lat = coords(:,1);
       flow.lon = coords(:,2);
+
+      cid = intersect(find(flow.lat == flow.center(1) ),find(flow.lon == flow.center(2)));
+      flow.center_id = cid(cid~=1);
+
+
       handles.flow(fname) = flow;
     end
 
@@ -523,4 +528,5 @@ function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     chron = str2double(get(handles.edit_chron,'String'));
     [mlat mlon] = inputm(1);
     closest_flowpoint(mlat,mlon,handles)
+    flow = handles.flow(handles.fname);
 end
