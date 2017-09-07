@@ -207,7 +207,7 @@ function h = draw_map(latlim,lonlim,handles)
 end
 
 function h = select_flowline(fname,handles)
-    handles.selected_flowline = fname;
+    handles.fname = fname;
     flow = handles.flow(fname);
     seg_id = flow.seg_id;
     handles.seg_id = seg_id;
@@ -495,7 +495,7 @@ end
 
 
 function pushbutton_select_chron_Callback(hObject, eventdata, handles)
-    fname = handles.selected_flowline;
+    fname = handles.fname;
     xflow = handles.flow(fname);
     seg_id = xflow.seg_id;
     [mlat mlon] = inputm(1);
@@ -521,4 +521,6 @@ end
 
 function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     chron = str2double(get(handles.edit_chron,'String'));
+    [mlat mlon] = inputm(1);
+    closest_flowpoint(mlat,mlon,handles)
 end
