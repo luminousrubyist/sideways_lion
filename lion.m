@@ -527,6 +527,6 @@ end
 function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     chron = str2double(get(handles.edit_chron,'String'));
     [mlat mlon] = inputm(1);
-    closest_flowpoint(mlat,mlon,handles)
-    flow = handles.flow(handles.fname);
+    fid = closest_flowpoint(mlat,mlon,handles)
+    flowpoint_radius(fid,handles)
 end
