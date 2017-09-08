@@ -254,6 +254,17 @@ function h = highlight_picks(picks,handles)
     h = handles;
 end
 
+function h = zoom_region(latlim,lonlim,handles)
+  axes(handles.axes_right);
+  handles = draw_map(latlim,lonlim,handles);
+  handles = plot_picks(handles);
+
+  handles = plot_flowline(handles.fname,handles);
+
+  handles = plot_segments(handles);
+  h = handles;
+end
+
 function h = plot_picks(handles)
   ax = gca;
   tag = ax.Tag;
@@ -277,10 +288,11 @@ function h = plot_picks(handles)
       ap = rmfield(ap,'picks_whte');
   end
 
-  ap.picks_whte = scatterm(plat(indices),plon(indices),40,'wd');
-  hold on;
   ap.picks = scatterm(plat(indices),plon(indices),100,page_ck(indices),'diamond','MarkerFaceColor','flat','MarkerEdgeColor','flat');
   hold on;
+  ap.picks_whte = scatterm(plat(indices),plon(indices),40,'wd');
+  hold on;
+
   colormap(ax,'jet');
   colorbar;
   caxis(handles.AGELIM);
@@ -548,6 +560,15 @@ function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     ridge_side = get(handles.edit_ridge_side,'String');
     handles.picks.selected = intersect(find(picks.page_ck == chron),find(strcmp(picks.ridge_side,ridge_side)));
     handles = highlight_picks(handles.picks.selected,handles);
+
+
+    nminlat = min(handles.picks.plat(handles.picks.selected)) - 0.1;
+    nmaxlat = max(handles.picks.plat(handles.picks.selected)) + 0.1;
+    nminlon = min(handles.picks.plon(handles.picks.selected)) - 0.1;
+    nmaxlon = max(handles.picks.plon(handles.picks.selected)) + 0.1;
+
+    handles = zoom_region([nminlat nmaxlat],[nminlon nmaxlon],handles);
+
     guidata(hObject,handles);
 end
 
