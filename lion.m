@@ -237,6 +237,23 @@ function h = select_flowline(fname,handles)
     h = handles;
 end
 
+function h = highlight_picks(picks,handles)
+    ax = gca;
+    tag = ax.Tag;
+    % axes plots
+    ap = handles.plots.(tag);
+
+    if(isfield(ap,'picks_highlight'))
+        delete(ap.picks_highlight);
+        ap = rmfield(ap,'picks_highlight');
+    end
+
+    ap.picks_highlight = plotm(handles.picks.plat(picks),handles.picks.plon(picks),'ro','MarkerSize',10,'MarkerFaceColor','red');
+    hold on;
+    handles.plots.(tag) = ap;
+    h = handles;
+end
+
 function h = plot_picks(handles)
   ax = gca;
   tag = ax.Tag;
@@ -526,10 +543,12 @@ function edit_chron_CreateFcn(hObject, eventdata, handles)
 end
 
 function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
+    picks = handles.picks;
     chron = str2double(get(handles.edit_chron,'String'));
-    [mlat mlon] = inputm(1);
-    fid = closest_flowpoint(mlat,mlon,handles)
-    flowpoint_radius(fid,handles)
+    ridge_side = get(handles.edit_ridge_side,'String');
+    handles.picks.selected = intersect(find(picks.page_ck == chron),find(strcmp(picks.ridge_side,ridge_side)));
+    handles = highlight_picks(handles.picks.selected,handles);
+    guidata(hObject,handles);
 end
 
 
@@ -541,6 +560,6 @@ function edit_ridge_side_CreateFcn(hObject, eventdata, handles)
     % Hint: edit controls usually have a white background on Windows.
     %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+        set(hObject,'BackgroundColor','white');
+    end
 end
