@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 05-Sep-2017 10:16:05
+    % Last Modified by GUIDE v2.5 08-Sep-2017 11:50:24
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -508,6 +508,7 @@ function pushbutton_select_chron_Callback(hObject, eventdata, handles)
     pid = closest_pick(mlat,mlon,handles);
 
     set(handles.edit_chron,'String',handles.picks.page_ck(pid));
+    set(handles.edit_ridge_side,'String',handles.picks.ridge_side(pid));
 
     guidata(hObject,handles);
 end
@@ -529,4 +530,17 @@ function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     [mlat mlon] = inputm(1);
     fid = closest_flowpoint(mlat,mlon,handles)
     flowpoint_radius(fid,handles)
+end
+
+
+function edit_ridge_side_Callback(hObject, eventdata, handles)
+end
+
+function edit_ridge_side_CreateFcn(hObject, eventdata, handles)
+
+    % Hint: edit controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
 end
