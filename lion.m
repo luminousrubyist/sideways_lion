@@ -232,7 +232,7 @@ function h = select_flowline(fname,handles)
     handles = draw_map(latlim,lonlim,handles);
     handles = plot_segments(handles);
     handles = plot_flowline(fname,handles);
-    handles = plot_picks(handles);
+    handles = plot_picks(handles.picks,handles);
 
     h = handles;
 end
@@ -248,59 +248,60 @@ function h = highlight_picks(picks,handles)
         ap = rmfield(ap,'picks_highlight');
     end
 
-    ap.picks_highlight = plotm(handles.picks.plat(picks),handles.picks.plon(picks),'ro','MarkerSize',10,'MarkerFaceColor','red');
+    ap.picks_highlight = plotm(picks.plat,picks.plon,'ro','MarkerSize',10,'MarkerFaceColor','red');
     hold on;
     handles.plots.(tag) = ap;
     h = handles;
 end
 
 function h = zoom_region(latlim,lonlim,handles)
-  axes(handles.axes_right);
-  handles = draw_map(latlim,lonlim,handles);
-  handles = plot_picks(handles);
+    axes(handles.axes_right);
+    handles = draw_map(latlim,lonlim,handles);
+    handles = plot_picks(handles.selected_picks,handles);
 
-  handles = plot_flowline(handles.fname,handles);
+    handles = plot_flowline(handles.fname,handles);
 
-  handles = plot_segments(handles);
-  h = handles;
+    handles = plot_segments(handles);
+    h = handles;
 end
 
-function h = plot_picks(handles)
-  ax = gca;
-  tag = ax.Tag;
-  latlim = handles.plots.(tag).latlim;
-  lonlim = handles.plots.(tag).lonlim;
+% @param pobj the object whose plat, plon, and page_ck properties should be examined
+function h = plot_picks(pobj,handles)
+    ax = gca;
+    tag = ax.Tag;
+    latlim = handles.plots.(tag).latlim;
+    lonlim = handles.plots.(tag).lonlim;
 
-  plat = handles.picks.plat;
-  plon = handles.picks.plon;
-  page_ck = handles.picks.page_ck;
+    plat = pobj.plat;
+    plon = pobj.plon;
+    page_ck = pobj.page_ck;
 
-  indices = find(plat < latlim(2) & plat > latlim(1) & plon < lonlim(2) & plon > lonlim(1));
+    indices = find(plat < latlim(2) & plat > latlim(1) & plon < lonlim(2) & plon > lonlim(1));
 
-  % axes plots
-  ap = handles.plots.(tag);
-  if isfield(ap,'picks')
-      delete(ap.picks);
-      ap = rmfield(ap,'picks');
-  end
-  if isfield(ap,'picks_whte')
-      delete(ap.picks_whte);
-      ap = rmfield(ap,'picks_whte');
-  end
+    % axes plots
+    ap = handles.plots.(tag);
+    if isfield(ap,'picks')
+        delete(ap.picks);
+        ap = rmfield(ap,'picks');
+    end
+    if isfield(ap,'picks_whte')
+        delete(ap.picks_whte);
+        ap = rmfield(ap,'picks_whte');
+    end
 
-  ap.picks = scatterm(plat(indices),plon(indices),100,page_ck(indices),'diamond','MarkerFaceColor','flat','MarkerEdgeColor','flat');
-  hold on;
-  ap.picks_whte = scatterm(plat(indices),plon(indices),40,'wd');
-  hold on;
+    ap.picks = scatterm(plat(indices),plon(indices),100,page_ck(indices),'diamond','MarkerFaceColor','flat','MarkerEdgeColor','flat');
+    hold on;
+    ap.picks_whte = scatterm(plat(indices),plon(indices),40,'wd');
+    hold on;
 
-  colormap(ax,'jet');
-  colorbar;
-  caxis(handles.AGELIM);
-  hold on;
+    colormap(ax,'jet');
+    colorbar;
+    caxis(handles.AGELIM);
+    hold on;
 
-  handles.plots.(tag) = ap;
+    handles.plots.(tag) = ap;
 
-  h = handles;
+    h = handles;
 end
 
 function h = plot_segments(handles)
@@ -459,7 +460,6 @@ function pushbutton_scope_ok_Callback(hObject, eventdata, handles)
 
     % Draw map, plot picks
     handles = draw_map([minlat maxlat],[minlon maxlon],handles);
-    handles = plot_picks(handles);
 
     guidata(hObject,handles);
 end
@@ -558,14 +558,23 @@ function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     picks = handles.picks;
     chron = str2double(get(handles.edit_chron,'String'));
     ridge_side = get(handles.edit_ridge_side,'String');
-    handles.picks.selected = intersect(find(picks.page_ck == chron),find(strcmp(picks.ridge_side,ridge_side)));
-    handles = highlight_picks(handles.picks.selected,handles);
+    % selected picks' indices
+    indices = intersect(find(picks.page_ck == chron),find(strcmp(picks.ridge_side,ridge_side)));
+    selected = struct();
+    selected.pid = handles.picks.pid(indices);
+    selected.plat = handles.picks.plat(indices);
+    selected.plon = handles.picks.plon(indices);
+    selected.page_ck = handles.picks.page_ck(indices);
+    selected.ridge_side = handles.picks.ridge_side{indices};
+    handles.selected_picks = selected;
+
+    handles = highlight_picks(handles.selected_picks,handles);
 
 
-    nminlat = min(handles.picks.plat(handles.picks.selected)) - 0.1;
-    nmaxlat = max(handles.picks.plat(handles.picks.selected)) + 0.1;
-    nminlon = min(handles.picks.plon(handles.picks.selected)) - 0.1;
-    nmaxlon = max(handles.picks.plon(handles.picks.selected)) + 0.1;
+    nminlat = min(handles.selected_picks.plat) - 0.1;
+    nmaxlat = max(handles.selected_picks.plat) + 0.1;
+    nminlon = min(handles.selected_picks.plon) - 0.1;
+    nmaxlon = max(handles.selected_picks.plon) + 0.1;
 
     handles = zoom_region([nminlat nmaxlat],[nminlon nmaxlon],handles);
 
