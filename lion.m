@@ -614,10 +614,12 @@ function pushbutton_project_Callback(hObject, eventdata, handles)
     % get slope and intercept
     m = fit(1);
     b = fit(2);
-    fit_lon1 = slon(1);
+    fit_lon1 = slon(1) - 10;
     fit_lat1 = m * fit_lon1 + b;
-    fit_lon2 = slon(end);
+    fit_lon2 = slon(1) + 10;
     fit_lat2 = m * fit_lon2 + b;
+
+    axes(handles.axes_right);
 
     % slope of normal line
     m2 = -1 / m;
@@ -629,13 +631,14 @@ function pushbutton_project_Callback(hObject, eventdata, handles)
         lon1 = plon - 1;
         lon2 = plon + 1;
         lat1 = (lon1 - plon) * m2 + plat;
-        lat2 = (lon2 - plon) * m2 + plat;;
+        lat2 = (lon2 - plon) * m2 + plat;
         % hold on;
-        [project_lon,project_lat] = polyxpoly([lon1 lon2],[lat1 lat2],[fit_lon1 fit_lon2],[fit_lat1 fit_lat2])
-        axes(handles.axes_right);
-        plotm(project_lat,project_lon,'rd')
+        [project_lon,project_lat] = polyxpoly([lon1 lon2],[lat1 lat2],[fit_lon1 fit_lon2],[fit_lat1 fit_lat2]);
+        plotm([plat,project_lat],[plon,project_lon],'r-');
         hold on;
+        flow_distance(project_lat,project_lon,handles)
     end
+    axes(handles.axes_main);
 
 
     % y = m (x - x1) + y1
