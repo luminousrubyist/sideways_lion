@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 08-Sep-2017 11:50:24
+    % Last Modified by GUIDE v2.5 11-Sep-2017 12:28:35
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -592,4 +592,23 @@ function edit_ridge_side_CreateFcn(hObject, eventdata, handles)
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
+end
+
+
+function pushbutton_project_Callback(hObject, eventdata, handles)
+    picks = handles.selected_picks;
+    flow = handles.flow(handles.fname);
+    avg_plat = mean(picks.plat);
+    avg_plon = mean(picks.plon);
+    fpid = closest_flowpoint(avg_plat,avg_plon,handles);
+    nxt = min(fpid + 40,length(flow.lat));
+    prev = max(fpid - 40,0);
+    plotm(flow.lat(prev),flow.lon(prev),'rd')
+    hold on;
+    plotm(flow.lat(fpid),flow.lon(fpid),'bd')
+    hold on;
+    plotm(flow.lat(nxt),flow.lon(nxt),'rd')
+    hold on;
+
+    guidata(hObject,handles);
 end
