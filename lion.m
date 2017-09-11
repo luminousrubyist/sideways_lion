@@ -262,6 +262,7 @@ function h = zoom_region(latlim,lonlim,handles)
     handles = plot_flowline(handles.fname,handles);
 
     handles = plot_segments(handles);
+    axes(handles.axes_main);
     h = handles;
 end
 
@@ -613,9 +614,29 @@ function pushbutton_project_Callback(hObject, eventdata, handles)
     % get slope and intercept
     m = fit(1);
     b = fit(2);
+    fit_lon1 = slon(1);
+    fit_lat1 = m * fit_lon1 + b;
+    fit_lon2 = slon(end);
+    fit_lat2 = m * fit_lon2 + b;
 
     % slope of normal line
     m2 = -1 / m;
+
+    % for each pick, calculate its projection
+    for i=1:length(picks.plat)
+        plat = picks.plat(i);
+        plon = picks.plon(i);
+        lon1 = plon - 1;
+        lon2 = plon + 1;
+        lat1 = (lon1 - plon) * m2 + plat;
+        lat2 = (lon2 - plon) * m2 + plat;;
+        % hold on;
+        [project_lon,project_lat] = polyxpoly([lon1 lon2],[lat1 lat2],[fit_lon1 fit_lon2],[fit_lat1 fit_lat2])
+        axes(handles.axes_right);
+        plotm(project_lat,project_lon,'rd')
+        hold on;
+    end
+
 
     % y = m (x - x1) + y1
 
