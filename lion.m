@@ -601,14 +601,23 @@ function pushbutton_project_Callback(hObject, eventdata, handles)
     avg_plat = mean(picks.plat);
     avg_plon = mean(picks.plon);
     fpid = closest_flowpoint(avg_plat,avg_plon,handles);
-    nxt = min(fpid + 40,length(flow.lat));
-    prev = max(fpid - 40,0);
-    plotm(flow.lat(prev),flow.lon(prev),'rd')
-    hold on;
-    plotm(flow.lat(fpid),flow.lon(fpid),'bd')
-    hold on;
-    plotm(flow.lat(nxt),flow.lon(nxt),'rd')
-    hold on;
+    prev = max(fpid - 15,0);
+    nxt = min(fpid + 15,length(flow.lat));
+
+    % sample latitudes and longitudes
+    slat = flow.lat(prev:nxt);
+    slon = flow.lon(prev:nxt);
+
+    % fit a line to the flowline
+    fit = polyfit(slon,slat,1);
+    % get slope and intercept
+    m = fit(1);
+    b = fit(2);
+
+    % slope of normal line
+    m2 = -1 / m;
+
+    % y = m (x - x1) + y1
 
     guidata(hObject,handles);
 end
