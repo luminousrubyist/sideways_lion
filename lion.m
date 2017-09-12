@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 11-Sep-2017 12:28:35
+    % Last Modified by GUIDE v2.5 12-Sep-2017 15:02:42
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -110,6 +110,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
       cid = intersect(find(flow.lat == flow.center(1) ),find(flow.lon == flow.center(2)));
       flow.center_id = cid(cid~=1);
 
+      flow.projections = {};
 
       handles.flow(fname) = flow;
     end
@@ -128,8 +129,6 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     handles.pid = 1:length(plat);
 
     % Projections output
-
-    handles.projections = {};
 
     % Init plots
     handles.plots = struct();
@@ -594,8 +593,23 @@ end
 
 function pushbutton_project_Callback(hObject, eventdata, handles)
     picks = handles.selected_picks;
+    flow = handles.flow(handles.fname);
+    flow.projections{end+1} = project_picks(picks,handles);
+    handles.flow(handles.fname) = flow;
 
-    project_picks(picks,handles)
 
     guidata(hObject,handles);
+end
+
+
+function pushbutton_output_Callback(hObject, eventdata, handles)
+    seg_id = handles.seg_id;
+    fname = handles.fname;
+
+    filename = sprintf('output/%d%s.flowprojection',seg_id,fname);
+    fprintf('Writing data on flowline %s to %s\n',fname,filename);
+    fhandle = fopen(filename,'w');
+    output = projection_output(fname,handles);
+    fprintf(fhandle,output);
+    fclose(fhandle);
 end
