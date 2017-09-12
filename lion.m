@@ -127,6 +127,10 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     handles.page_ck = page_ck;
     handles.pid = 1:length(plat);
 
+    % Projections output
+
+    handles.projections = proj;
+
     % Init plots
     handles.plots = struct();
     % Create an entry in the plots object for each axes
@@ -264,6 +268,56 @@ function h = zoom_region(latlim,lonlim,handles)
     handles = plot_segments(handles);
     axes(handles.axes_main);
     h = handles;
+end
+
+function projection = project_picks(picks,handles)
+    flow = handles.flow(handles.fname);
+    avg_plat = mean(picks.plat);
+    avg_plon = mean(picks.plon);
+    fpid = closest_flowpoint(avg_plat,avg_plon,handles);
+    prev = max(fpid-15,0);
+    nxt = min(fpid + 15,length(flow.lat));
+
+    % sample latitudes and longitudes
+    slat = flow.lat(prev:nxt);
+    slon = flow.lon(prev:nxt);
+
+    % fit a line to the flowline
+    fit = polyfit(slon,slat,1);
+    % get slope and intercept
+    m = fit(1);
+    b = fit(2);
+    fit_lon1 = slon(1) - 10;
+    fit_lat1 = m * fit_lon1 + b;
+    fit_lon2 = slon(1) + 10;
+    fit_lat2 = m * fit_lon2 + b;
+
+    m2 = -1/m;
+
+    len = length(picks.plat);
+    dists = zeros(len,1);
+
+    % for each pick, calculate its projection
+    for i=1:len
+        plat = picks.plat(i);
+        plon = picks.plon(i);
+        lon1 = plon - 1;
+        lon2 = plon + 1;
+        lat1 = (lon1 - plon) * m2 + plat;
+        lat2 = (lon2 - plon) * m2 + plat;
+
+        [project_lon,project_lat] = polyxpoly([lon1 lon2],[lat1 lat2],[fit_lon1 fit_lon2],[fit_lat1 fit_lat2]);
+        dist = flow_distance(project_lat,project_lon,handles);
+        dists(i) = dist;
+    end
+
+    proj = struct();
+    proj.chron = picks.page_ck(1);
+    proj.ridge_side = picks.ridge_side(1,:);
+    proj.mean_dist = mean(dists);
+    proj.std_dev = std(dists);
+    proj.npicks = len;
+    projection = proj;
 end
 
 % @param pobj the object whose plat, plon, and page_ck properties should be examined
@@ -595,53 +649,10 @@ function edit_ridge_side_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-
 function pushbutton_project_Callback(hObject, eventdata, handles)
     picks = handles.selected_picks;
-    flow = handles.flow(handles.fname);
-    avg_plat = mean(picks.plat);
-    avg_plon = mean(picks.plon);
-    fpid = closest_flowpoint(avg_plat,avg_plon,handles);
-    prev = max(fpid - 15,0);
-    nxt = min(fpid + 15,length(flow.lat));
 
-    % sample latitudes and longitudes
-    slat = flow.lat(prev:nxt);
-    slon = flow.lon(prev:nxt);
-
-    % fit a line to the flowline
-    fit = polyfit(slon,slat,1);
-    % get slope and intercept
-    m = fit(1);
-    b = fit(2);
-    fit_lon1 = slon(1) - 10;
-    fit_lat1 = m * fit_lon1 + b;
-    fit_lon2 = slon(1) + 10;
-    fit_lat2 = m * fit_lon2 + b;
-
-    axes(handles.axes_right);
-
-    % slope of normal line
-    m2 = -1 / m;
-
-    % for each pick, calculate its projection
-    for i=1:length(picks.plat)
-        plat = picks.plat(i);
-        plon = picks.plon(i);
-        lon1 = plon - 1;
-        lon2 = plon + 1;
-        lat1 = (lon1 - plon) * m2 + plat;
-        lat2 = (lon2 - plon) * m2 + plat;
-        % hold on;
-        [project_lon,project_lat] = polyxpoly([lon1 lon2],[lat1 lat2],[fit_lon1 fit_lon2],[fit_lat1 fit_lat2]);
-        plotm([plat,project_lat],[plon,project_lon],'r-');
-        hold on;
-        flow_distance(project_lat,project_lon,handles)
-    end
-    axes(handles.axes_main);
-
-
-    % y = m (x - x1) + y1
+    project_picks(picks,handles)
 
     guidata(hObject,handles);
 end
