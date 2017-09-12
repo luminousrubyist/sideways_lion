@@ -563,15 +563,8 @@ function pushbutton_select_chron_ok_Callback(hObject, eventdata, handles)
     picks = handles.picks;
     chron = str2double(get(handles.edit_chron,'String'));
     ridge_side = get(handles.edit_ridge_side,'String');
-    % selected picks' indices
-    indices = intersect(find(picks.page_ck == chron),find(strcmp(picks.ridge_side,ridge_side)));
-    selected = struct();
-    selected.pid = handles.picks.pid(indices);
-    selected.plat = handles.picks.plat(indices);
-    selected.plon = handles.picks.plon(indices);
-    selected.page_ck = handles.picks.page_ck(indices);
-    selected.ridge_side = handles.picks.ridge_side{indices};
-    handles.selected_picks = selected;
+
+    handles.selected_picks = picks_by_chron(picks,chron,ridge_side);
 
     handles = highlight_picks(handles.selected_picks,handles);
 
