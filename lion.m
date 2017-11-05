@@ -610,6 +610,6 @@ function pushbutton_output_Callback(hObject, eventdata, handles)
     fprintf('Writing data on flowline %s to %s\n',fname,filename);
     fhandle = fopen(filename,'w');
     output = projection_output(fname,handles);
-    fprintf(fhandle,output);
+    fprintf(fhandle,output{1});
     fclose(fhandle);
 end
