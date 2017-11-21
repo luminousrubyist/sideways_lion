@@ -97,7 +97,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
 
       % Build xflow data
       flow = struct();
-      flow.name = fname;
+      flow.fname = fname;
       flow.seg_id = seg_id;
       coords = load(fullname);
 
@@ -114,10 +114,11 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
       cid = intersect(find(flow.lat == flow.center(1) ),find(flow.lon == flow.center(2)));
       flow.center_id = cid(cid~=1);
 
-      flow.projections = {};
-
       handles.flow(fname) = flow;
     end
+    
+    % Cell array for storing projection outputs
+    handles.projections = {};
 
     % Load picks
     picksformat = '%n %n %n';
@@ -240,6 +241,9 @@ function h = select_flowline(fname,handles)
     handles = plot_segments(handles);
     handles = plot_flowline(fname,handles);
     handles = plot_picks(handles.picks,handles);
+    
+    % Reset output
+    handles.projections = {};
 
     h = handles;
 end
@@ -597,10 +601,7 @@ end
 
 function pushbutton_project_Callback(hObject, eventdata, handles)
     picks = handles.selected_picks;
-    flow = handles.flow(handles.fname);
-    flow.projections{end+1} = project_picks(picks,handles);
-    handles.flow(handles.fname) = flow;
-
+    handles.projections{end+1} = project_picks(picks,handles);
 
     guidata(hObject,handles);
 end
@@ -613,7 +614,7 @@ function pushbutton_output_Callback(hObject, eventdata, handles)
     filename = sprintf('output/%d%s.flowprojection',seg_id,fname);
     fprintf('Writing data on flowline %s to %s\n',fname,filename);
     fhandle = fopen(filename,'w');
-    output = projection_output(fname,handles);
+    output = projection_output(handles);
     fprintf(fhandle,output{1});
     fclose(fhandle);
 end

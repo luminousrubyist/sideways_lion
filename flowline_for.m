@@ -10,7 +10,7 @@ function fname = flowline_for(seg_id,handles)
         key = k{1};
         flow = handles.flow(key);
         if flow.seg_id == seg_id
-            fname = flow.name;
+            fname = flow.fname;
             return
         end
     end

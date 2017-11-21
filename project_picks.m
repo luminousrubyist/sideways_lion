@@ -45,6 +45,8 @@ function projection = project_picks(picks,handles)
     end
 
     proj = struct();
+    proj.fname = flow.fname;
+    proj.seg_id = flow.seg_id;
     proj.chron = picks.page_ck(1);
     proj.ridge_side = picks.ridge_side(1,:);
     proj.mean_dist = mean(dists);
