@@ -52,8 +52,12 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     % handles    structure with handles and user data (see GUIDATA)
     % varargin   command line arguments to lion (see VARARGIN)
 
+    % library: freezeColors
     addpath('freezeColors_v23_cbfreeze/freezeColors');
     warning('off','MATLAB:nargchk:deprecated');
+    
+    % library: JSON
+    addpath('jsonlab-1.5/jsonlab-1.5');
 
     handles.files = struct();
     handles.files.ETOPO = 'data/etopo1_bed_c_f4.flt';
@@ -155,7 +159,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
       disp('Output directory not found, creating it');
       mkdir('output');
     end
-
+    
     % Choose default command line output for lion
     handles.output = hObject;
 
