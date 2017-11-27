@@ -22,7 +22,7 @@ function varargout = lion(varargin)
 
     % Edit the above text to modify the response to help lion
 
-    % Last Modified by GUIDE v2.5 12-Sep-2017 15:02:42
+    % Last Modified by GUIDE v2.5 27-Nov-2017 14:15:24
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 1;
@@ -55,7 +55,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
     % library: freezeColors
     addpath('freezeColors_v23_cbfreeze/freezeColors');
     warning('off','MATLAB:nargchk:deprecated');
-    
+
     % library: JSON
     addpath('jsonlab-1.5/jsonlab-1.5');
 
@@ -116,7 +116,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
 
       handles.flow(fname) = flow;
     end
-    
+
     % Cell array for storing projection outputs
     handles.projections = {};
 
@@ -160,7 +160,7 @@ function lion_OpeningFcn(hObject, eventdata, handles, varargin)
       disp('Output directory not found, creating it');
       mkdir('output');
     end
-    
+
     % Choose default command line output for lion
     handles.output = hObject;
 
@@ -241,7 +241,7 @@ function h = select_flowline(fname,handles)
     handles = plot_segments(handles);
     handles = plot_flowline(fname,handles);
     handles = plot_picks(handles.picks,handles);
-    
+
     % Reset output
     handles.projections = {};
 
@@ -617,4 +617,12 @@ function pushbutton_output_Callback(hObject, eventdata, handles)
     output = projection_output(handles);
     fprintf(fhandle,output{1});
     fclose(fhandle);
+end
+
+
+% --- Executes on button press in pushbutton_project_all.
+function pushbutton_project_all_Callback(hObject, eventdata, handles)
+    % hObject    handle to pushbutton_project_all (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
 end
