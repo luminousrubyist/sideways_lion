@@ -625,4 +625,19 @@ function pushbutton_project_all_Callback(hObject, eventdata, handles)
     % hObject    handle to pushbutton_project_all (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
+    % 2xn cell matrix, with the first column begin chrons and
+    % the second being the ridge_side
+    chrons = all_chrons(handles);
+    len = length(chrons);
+    for i=1:len
+      row = chrons{i};
+      page_ck = row{1};
+      side = row{2};
+      picks = picks_by_chron(handles.picks,page_ck,side);
+      projection = project_picks(picks,handles);
+      handles.projections{end+1} = projection;
+    end
+
+    % save
+    guidata(hObject,handles);
 end
