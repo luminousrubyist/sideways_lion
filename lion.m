@@ -277,16 +277,16 @@ function h = zoom_region(latlim,lonlim,handles)
     h = handles;
 end
 
-% @param pobj the object whose plat, plon, and page_ck properties should be examined
-function h = plot_picks(pobj,handles)
+% @param picks the object whose plat, plon, and page_ck properties should be examined
+function h = plot_picks(picks,handles)
     ax = gca;
     tag = ax.Tag;
     latlim = handles.plots.(tag).latlim;
     lonlim = handles.plots.(tag).lonlim;
 
-    plat = pobj.plat;
-    plon = pobj.plon;
-    page_ck = pobj.page_ck;
+    plat = picks.plat;
+    plon = picks.plon;
+    page_ck = picks.page_ck;
 
     indices = find(plat < latlim(2) & plat > latlim(1) & plon < lonlim(2) & plon > lonlim(1));
 
@@ -323,7 +323,10 @@ function h = plot_segments(handles)
     % axes plots
     ap = handles.plots.(tag);
     if(isfield(ap,'segments'))
-      delete(ap.segments);
+      len = length(ap.segments);
+      for i=1:len
+          delete(ap.segments{i});
+      end
       ap = rmfield(ap,'segments');
     end
     lat1 = handles.segments.lat1;
@@ -339,8 +342,11 @@ function h = plot_segments(handles)
     lat2=lat2(indices);
     lon1=lon1(indices);
     lon2=lon2(indices);
+
+    len = length(lat1);
+    ap.segments = cell(len,1);
     for i = 1:length(lat1)
-        ap.segments = plotm([lat1(i) lat2(i)],[lon1(i) lon2(i)],'r-','linewidth',4);
+        ap.segments{i} = plotm([lat1(i) lat2(i)],[lon1(i) lon2(i)],'r-','linewidth',4);
         hold on;
     end
 

@@ -31,6 +31,11 @@ function projection = project_picks(picks,handles)
     dists = zeros(len,1);
 
     % for each pick, calculate its projection
+
+
+    proj_plat = zeros(len,1);
+    proj_plon = zeros(len,1);
+
     for i=1:len
         plat = picks.plat(i);
         plon = picks.plon(i);
@@ -40,11 +45,18 @@ function projection = project_picks(picks,handles)
         lat2 = (lon2 - plon) * m2 + plat;
 
         [project_lon,project_lat] = polyxpoly([lon1 lon2],[lat1 lat2],[fit_lon1 fit_lon2],[fit_lat1 fit_lat2]);
+
+        proj_plat(i) = project_lat;
+        proj_plon(i) = project_lon;
+
         dist = flow_distance(project_lat,project_lon,handles);
         dists(i) = dist;
     end
 
     proj = struct();
+    proj.picks = picks;
+    proj.plat = proj_plat;
+    proj.plon = proj_plon;
     proj.fname = flow.fname;
     proj.seg_id = flow.seg_id;
     proj.chron = picks.page_ck(1);
