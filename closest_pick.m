@@ -11,5 +11,5 @@ function pid = closest_pick(lat,lon,handles)
     plon_vector = picks.plon;
     distances_to_mouse = hypot(lat - plat_vector, lon - plon_vector);
     [~,index] = min(abs(distances_to_mouse));
-    pid = index;
+    pid = handles.picks.pid(index);
 end

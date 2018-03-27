@@ -251,16 +251,25 @@ end
 function h = highlight_picks(picks,handles)
     ax = gca;
     tag = ax.Tag;
+
+    clear_highlight(handles);
+
     % axes plots
     ap = handles.plots.(tag);
+    ap.picks_highlight = plotm(picks.plat,picks.plon,'ro','MarkerSize',10,'MarkerFaceColor','red');
+    hold on;
+    handles.plots.(tag) = ap;
+    h = handles;
+end
 
+function h = clear_highlight(handles)
+    ax = gca;
+    tag = ax.Tag;
+    ap = handles.plots.(tag);
     if(isfield(ap,'picks_highlight'))
         delete(ap.picks_highlight);
         ap = rmfield(ap,'picks_highlight');
     end
-
-    ap.picks_highlight = plotm(picks.plat,picks.plon,'ro','MarkerSize',10,'MarkerFaceColor','red');
-    hold on;
     handles.plots.(tag) = ap;
     h = handles;
 end
@@ -547,15 +556,18 @@ end
 
 
 function pushbutton_select_chron_Callback(hObject, eventdata, handles)
+    handles.picks
     fname = handles.fname;
     xflow = handles.flow(fname);
     seg_id = xflow.seg_id;
     [mlat mlon] = inputm(1);
     % Get id of closest pick
-    pid = closest_pick(mlat,mlon,handles);
-
-    set(handles.edit_chron,'String',handles.picks.page_ck(pid));
-    set(handles.edit_ridge_side,'String',handles.picks.ridge_side(pid));
+    pid = closest_pick(mlat,mlon,handles)
+    index = find(pid == handles.picks.pid);
+    handles.picks.pid
+    handles.picks.ridge_side
+    set(handles.edit_chron,'String',handles.picks.page_ck(index));
+    set(handles.edit_ridge_side,'String',handles.picks.ridge_side(index));
 
     guidata(hObject,handles);
 end
@@ -608,8 +620,13 @@ end
 function pushbutton_project_Callback(hObject, eventdata, handles)
     picks = handles.selected_picks;
     handles.projections{end+1} = project_picks(picks,handles);
-
+    handles.picks = picks_difference(handles.picks,picks);
+    handles.selected_picks = [];
+    handles = plot_picks(handles.picks,handles);
+    handles = clear_highlight(handles);
+    
     guidata(hObject,handles);
+    handles.picks
 end
 
 
